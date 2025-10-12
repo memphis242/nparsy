@@ -1,0 +1,32 @@
+*.o
+*.exe
+*.a
+*.lst
+*.log
+*.txt
+!test/*.txt
+*.out
+
+# VSCode
+.vscode/*
+
+# vim
+*.swp
+
+# CppCheck
+*.a1
+*.snalyzerinfo
+*.s1
+
+# gcov
+*.gcov
+*.gcno
+*.gcda
+
+# gcovr
+cov*.html
+cov*.css
+
+# Vim
+tags
+
