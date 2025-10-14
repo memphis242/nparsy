@@ -12,6 +12,15 @@
 /* Definitions */
 constexpr size_t PARSY_MAX_ERR_MSG_LEN = 250u;
 
+enum ParsyNumFormat
+{
+   Parsy_Dec,
+   Parsy_Hex,
+   Parsy_Bin,
+   Parsy_Oct,
+   Parsy_NumOfFmts
+};
+
 #define PARSY_RESULT(enum, msg) Parsy_##enum,
 // All possible result types from the parsy API
 enum ParsyResult

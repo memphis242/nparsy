@@ -16,35 +16,49 @@
 #include "parsy_uint.h"
 
 /* Local Macro Definitions */
-#ifdef TEST
-   #define STATIC // Set to nothing
-#else
-   #define STATIC static
-#endif
 
 /* Datatypes */
 
 /* Local Data */
 
-/* Private Function Prototypes */
-
-STATIC bool MyAtoI(char digit, uint8_t * converted_digit);
-
-#ifndef NDEBUG
-STATIC int UInt8_Cmp( const void * a, const void * b );
-#endif
-
-/* Meat of the Program */
+/*** Private Function Prototypes ***/
+static bool parsy_atoi(char digit, uint8_t * converted_digit);
 
 /* Public Function Implementations */
-
-[[nodiscard]] enum ParsyResult ParsyUint(const char * str, uint64_t * parsed_val);
-
-[[nodiscard]] enum ParsyResult ParsyUintList(const char * str, uint64_t * buf, size_t len);
 
 // Acceptable formats:
 // Hex:     0xZZ, Z, ZZ, ZZh, ZZH, ZZx, ZZX, xZZ, XZZ
 // Decimal: ZZd, ZZD
+[[nodiscard]]
+enum ParsyResult ParsyUint(
+         const char * str,
+         uint64_t * parsed_val,
+         enum ParsyNumFormat default_fmt )
+{
+   // Initial input validation
+   if ( str == NULL )
+      return Parsy_InvalidString;
+   else if ( parsed_val == NULL )
+      return Parsy_NullPtr;
+   else if ( (int8_t)default_fmt < 0 || (int8_t)default_fmt > (int8_t)Parsy_NumOfFmts )
+      return Parsy_InvalidDefaultFormat;
+
+   // TODO
+
+   return Parsy_GoodResult;
+}
+
+[[nodiscard]]
+enum ParsyResult ParsyUintList(
+      const char * str,
+      uint64_t * buf,
+      size_t len )
+{
+   // TODO
+
+   return Parsy_GoodResult;
+}
+
 STATIC enum LIN_PID_Result_E GetID( const char * str,
                                     uint8_t * id,
                                     bool * ishex,
@@ -479,9 +493,9 @@ STATIC enum LIN_PID_Result_E GetID( const char * str,
       {
          most_significant_digit = 0x00u;
 #ifndef NDEBUG
-         bool conv = MyAtoI( first_digit, &least_significant_digit );
+         bool conv = parsy_atoi( first_digit, &least_significant_digit );
 #else
-         (void)MyAtoI( first_digit, &least_significant_digit );
+         (void)parsy_atoi( first_digit, &least_significant_digit );
 #endif
          assert( conv );
          assert( (most_significant_digit == 0x00) && (least_significant_digit <= 0x0F) );
@@ -491,11 +505,11 @@ STATIC enum LIN_PID_Result_E GetID( const char * str,
       else
       {
 #ifndef NDEBUG
-         bool conv1 = MyAtoI( first_digit, &most_significant_digit );
-         bool conv2 = MyAtoI( second_digit, &least_significant_digit );
+         bool conv1 = parsy_atoi( first_digit, &most_significant_digit );
+         bool conv2 = parsy_atoi( second_digit, &least_significant_digit );
 #else
-         (void)MyAtoI( first_digit, &most_significant_digit );
-         (void)MyAtoI( second_digit, &least_significant_digit );
+         (void)parsy_atoi( first_digit, &most_significant_digit );
+         (void)parsy_atoi( second_digit, &least_significant_digit );
 #endif
          assert( conv1 && conv2 );
          assert( (most_significant_digit <= 0x0F) && (least_significant_digit <= 0x0F) );
@@ -525,84 +539,33 @@ STATIC enum LIN_PID_Result_E GetID( const char * str,
    return result;
 }
 
-STATIC bool MyAtoI(char digit, uint8_t * converted_digit)
+/*** Private Function Implementations ***/
+
+/**
+ * @brief Like the C std lib atoi, but safer and more expressive.
+ */
+static bool parsy_atoi(char digit, uint8_t * converted_digit)
 {
    assert( converted_digit != NULL );
 
    bool ret_val = false;
 
    // Check input validity
-   if (
-          ( (digit >= '0') && (digit <= '9') ) ||
-          ( (digit >= 'A') && (digit <= 'F') ) ||
-          ( (digit >= 'a') && (digit <= 'f') )
-      )
+   if (   ( digit >= '0' && digit <= '9' )
+       || ( digit >= 'A' && digit <= 'F' )
+       || ( digit >= 'a' && digit <= 'f' ) )
    {
       if ( (digit >= '0') && (digit <= '9') )
-      {
          *converted_digit = (uint8_t)(digit - '0');
-         ret_val = true;
-      }
+
       else if ( (digit >= 'A') && (digit <= 'F') )
-      {
-         *converted_digit = (uint8_t)( 10 + (digit - 'A') );
-         ret_val = true;
-      }
+         *converted_digit = (uint8_t)(10 + (digit - 'A'));
+
       else
-      {
-         *converted_digit = (uint8_t)( 10 + (digit - 'a') );
-         ret_val = true;
-      }
+         *converted_digit = (uint8_t)(10 + (digit - 'a'));
+
+      ret_val = true;
    }
 
    return ret_val;
-}
-
-#ifndef NDEBUG
-
-STATIC int UInt8_Cmp( const void * a, const void * b )
-{
-   assert( (a != NULL) && (b != NULL) );
-
-   uint8_t * c = (uint8_t *)a;
-   uint8_t * d = (uint8_t *)b;
-
-   return ( *c - *d );
-}
-
-#endif
-
-/**
- * @brief Determines the numeric format of the given string entry.
- *
- * This function analyzes the input string and identifies its numeric format,
- * based on a list of supported formats.
- * 
- * @note str is assumed to be a valid ID entry! Do not call this function before
- *       passing the string through GetID.
- *
- * @param str Pointer to the null-terminated string to be analyzed.
- * @return NumericFormat_E enunm indicating the detected format.
- */
-STATIC enum NumericFormat_E DetermineEntryFormat( const char * str,
-                                                  bool ishex,
-                                                  bool isdec )
-{
-   assert( (str != NULL) && (str[0] != '\0') );
-
-   // Let's try this /w regex, just for fun.
-   for ( int i = 0; i < NUM_OF_NUMERIC_FORMATS; i++ )
-   {
-      if ( (ishex && NumericFormats[i].isdec) || (isdec && NumericFormats[i].ishex) )
-      {
-         continue;
-      }
-      int match_len; // don't care about this but tiny-regex-c expects it
-      if ( re_match( NumericFormats[i].regex_pattern, str, &match_len) != -1 )
-      {
-         return (enum NumericFormat_E)i;
-      }
-   }
-
-   return INVALID_NUMERIC_FORMAT;
 }

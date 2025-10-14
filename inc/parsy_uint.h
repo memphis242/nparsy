@@ -18,9 +18,14 @@
  *       possiblities. See README.md.
  * @param[in] str : string to parse through
  * @param[out] parsed_val : where the parse result is placed, if one is found; otherwise, nothing is done.
+ * @param[in] default_fmt : Assume bare numbers like 55 (which could be dec, hex, or oct) are of this format.
  * @return enum ParsyResult : parsy library result type
  */
-[[nodiscard]] enum ParsyResult ParsyUint(const char * str, uint64_t * parsed_val);
+[[nodiscard]]
+enum ParsyResult ParsyUint(
+      const char * str,
+      uint64_t * parsed_val,
+      enum ParsyNumFormat default_fmt );
 
 /**
  * @brief Parse out any unsigned integers found until a limit is hit (see below).
@@ -33,4 +38,5 @@
  * @param[in] len : length of buf
  * @return enum ParsyResult - library result type
  */
-[[nodiscard]] enum ParsyResult ParsyUintList(const char * str, uint64_t * buf, size_t len);
+[[nodiscard]]
+enum ParsyResult ParsyUintList(const char * str, uint64_t * buf, size_t len);
