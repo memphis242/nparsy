@@ -1,6 +1,6 @@
 /*!
- * @file    parsy_uint.c
- * @brief   Implementation of Parsy's unsigned integer parsing.
+ * @file    nparsy_uint.c
+ * @brief   Implementation of NParsy's unsigned integer parsing.
  * @author  Abdullah Almosalami @memphis242
  * @date    Oct 2025
  * @copyright MIT License
@@ -13,7 +13,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "parsy_uint.h"
+#include "nparsy_uint.h"
 
 /* Local Macro Definitions */
 
@@ -22,7 +22,7 @@
 /* Local Data */
 
 /*** Private Function Prototypes ***/
-static bool parsy_atoi(char digit, uint8_t * converted_digit);
+static bool nparsy_atoi(char digit, uint8_t * converted_digit);
 
 /* Public Function Implementations */
 
@@ -32,19 +32,19 @@ static bool parsy_atoi(char digit, uint8_t * converted_digit);
 // Decimal: ZZd, ZZD ZZ
 // Binary:  0bZZ ZZ
 [[nodiscard]]
-enum ParsyResult ParsyUInt(
+enum NParsyResult NParsyUInt(
          const char * str,
          uint64_t * parsed_val,
          size_t * accumulated_strlen,
-         enum ParsyNumFormat default_fmt )
+         enum NParsyNumFormat default_fmt )
 {
    // Initial input validation
    if ( str == nullptr )
-      return Parsy_InvalidString;
+      return NParsy_InvalidString;
    else if ( parsed_val == nullptr )
-      return Parsy_NullPtr;
-   else if ( (int)default_fmt < 0 || (int)default_fmt > (int)Parsy_NumOfFmts )
-      return Parsy_InvalidDefaultFormat;
+      return NParsy_NullPtr;
+   else if ( (int)default_fmt < 0 || (int)default_fmt > (int)NParsy_NumOfFmts )
+      return NParsy_InvalidDefaultFormat;
 
    // TODO
    // Parsing State Machine Time!
@@ -65,7 +65,7 @@ enum ParsyResult ParsyUInt(
    size_t nchars_parsed = 1;
    ptrdiff_t str_idx = 0;
    uint64_t valbuf = 0;
-   enum ParsyResult result = Parsy_GoodResult;
+   enum NParsyResult result = NParsy_GoodResult;
    do
    {
       // TODO
@@ -74,7 +74,7 @@ enum ParsyResult ParsyUInt(
       ++str_idx;
    }
    while ( parser_state != Parser_UIntObtained
-           && nchars_parsed < PARSY_MAX_PARSABLE_STRING_LEN );
+           && nchars_parsed < NPARSY_MAX_PARSABLE_STRING_LEN );
 
    if ( parser_state == Parser_UIntObtained )
       *parsed_val = valbuf;
@@ -87,14 +87,14 @@ enum ParsyResult ParsyUInt(
 
 /******************************************************************************/
 [[nodiscard]]
-enum ParsyResult ParsyUIntList(
+enum NParsyResult NParsyUIntList(
       const char * str,
       uint64_t * buf,
       size_t len )
 {
    // TODO
 
-   return Parsy_GoodResult;
+   return NParsy_GoodResult;
 }
 
 STATIC enum LIN_PID_Result_E GetID( const char * str,
@@ -531,9 +531,9 @@ STATIC enum LIN_PID_Result_E GetID( const char * str,
       {
          most_significant_digit = 0x00u;
 #ifndef NDEBUG
-         bool conv = parsy_atoi( first_digit, &least_significant_digit );
+         bool conv = nparsy_atoi( first_digit, &least_significant_digit );
 #else
-         (void)parsy_atoi( first_digit, &least_significant_digit );
+         (void)nparsy_atoi( first_digit, &least_significant_digit );
 #endif
          assert( conv );
          assert( (most_significant_digit == 0x00) && (least_significant_digit <= 0x0F) );
@@ -543,11 +543,11 @@ STATIC enum LIN_PID_Result_E GetID( const char * str,
       else
       {
 #ifndef NDEBUG
-         bool conv1 = parsy_atoi( first_digit, &most_significant_digit );
-         bool conv2 = parsy_atoi( second_digit, &least_significant_digit );
+         bool conv1 = nparsy_atoi( first_digit, &most_significant_digit );
+         bool conv2 = nparsy_atoi( second_digit, &least_significant_digit );
 #else
-         (void)parsy_atoi( first_digit, &most_significant_digit );
-         (void)parsy_atoi( second_digit, &least_significant_digit );
+         (void)nparsy_atoi( first_digit, &most_significant_digit );
+         (void)nparsy_atoi( second_digit, &least_significant_digit );
 #endif
          assert( conv1 && conv2 );
          assert( (most_significant_digit <= 0x0F) && (least_significant_digit <= 0x0F) );
@@ -582,7 +582,7 @@ STATIC enum LIN_PID_Result_E GetID( const char * str,
 /**
  * @brief Like the C std lib atoi, but safer and more expressive.
  */
-static bool parsy_atoi(char digit, uint8_t * converted_digit)
+static bool nparsy_atoi(char digit, uint8_t * converted_digit)
 {
    assert( converted_digit != NULL );
 

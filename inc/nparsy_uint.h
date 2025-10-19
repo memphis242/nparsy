@@ -1,5 +1,5 @@
 /**
- * @file parsy_uint.h
+ * @file nparsy_uint.h
  * @brief API for parsing an unsigned integer out of a string.
  * @author Abdulla Almosalami (memphis242)
  * @date Oct 2025
@@ -9,8 +9,8 @@
 /* File Inclusions */
 #include <stdint.h>
 
-#include "parsy_types.h"
-#include "parsy_constants.h"
+#include "nparsy_types.h"
+#include "nparsy_constants.h"
 
 /**
  * @brief Parse out the first unsigned integer occurrence.
@@ -22,14 +22,14 @@
  * @param[out] accumulated_strlen : [Optional] How many chars were passed-through before result was obtained
  *                                             If nullptr, nothing happens.
  * @param[in] default_fmt : Assume bare numbers like 10 (which could be dec, hex, or bin) are of this format.
- * @return enum ParsyResult : parsy library result type
+ * @return enum NParsyResult : nparsy library result type
  */
 [[nodiscard]]
-enum ParsyResult ParsyUInt(
+enum NParsyResult NParsyUInt(
       const char * str,
       uint64_t * parsed_val,
       size_t * accumulated_strlen,
-      enum ParsyNumFormat default_fmt );
+      enum NParsyNumFormat default_fmt );
 
 /**
  * @brief Parse out any unsigned integers found until a limit is hit (see below).
@@ -40,7 +40,7 @@ enum ParsyResult ParsyUInt(
  * @param[in] str : string to parse through
  * @param[out] buf : where the parse results are placed, if found; otherwise, nothing is done.
  * @param[in] len : length of buf
- * @return enum ParsyResult - library result type
+ * @return enum NParsyResult - library result type
  */
 [[nodiscard]]
-enum ParsyResult ParsyUIntList(const char * str, uint64_t * buf, size_t len);
+enum NParsyResult NParsyUIntList(const char * str, uint64_t * buf, size_t len);
