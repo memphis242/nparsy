@@ -29,4 +29,5 @@ cov*.css
 
 # Vim
 tags
-
+*.swo
+*.swp
