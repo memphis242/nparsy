@@ -17,7 +17,6 @@ enum ParsyNumFormat
    Parsy_Dec,
    Parsy_Hex,
    Parsy_Bin,
-   Parsy_Oct,
    Parsy_NumOfFmts
 };
 
@@ -31,7 +30,7 @@ enum ParsyResult
 #undef PARSY_RESULT
 
 /*** Extern Declarations ***/
-#ifndef PARSY_EXCLUDE_RESULT_STRINGS_TABLE
+#ifdef PARSY_INCLUDE_RESULT_STRINGS_TABLE
 // Optional list of strings that correspond to each ParsyResult enum value for
 // the sake of printing out. You'd index into this array using the result enum value.
 // For example:

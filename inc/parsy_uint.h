@@ -9,22 +9,26 @@
 /* File Inclusions */
 #include <stdint.h>
 
-#include "parsy_results_type.h"
+#include "parsy_types.h"
 #include "parsy_constants.h"
 
 /**
  * @brief Parse out the first unsigned integer occurrence.
- * @note Integers may be decimal, hex, or binary, with various prefix/suffix
- *       possiblities. See README.md.
+ * @note Integers may be decimal, hex, or binary - see README.md.
+ * @note Can be repeatedly called by making use of the accumulated_strlen param
+ * @note Up to 64-bit unsigned integers are parsable. Larger integers are skipped.
  * @param[in] str : string to parse through
  * @param[out] parsed_val : where the parse result is placed, if one is found; otherwise, nothing is done.
- * @param[in] default_fmt : Assume bare numbers like 55 (which could be dec, hex, or oct) are of this format.
+ * @param[out] accumulated_strlen : [Optional] How many chars were passed-through before result was obtained
+ *                                             If nullptr, nothing happens.
+ * @param[in] default_fmt : Assume bare numbers like 10 (which could be dec, hex, or bin) are of this format.
  * @return enum ParsyResult : parsy library result type
  */
 [[nodiscard]]
-enum ParsyResult ParsyUint(
+enum ParsyResult ParsyUInt(
       const char * str,
       uint64_t * parsed_val,
+      size_t * accumulated_strlen,
       enum ParsyNumFormat default_fmt );
 
 /**
@@ -39,4 +43,4 @@ enum ParsyResult ParsyUint(
  * @return enum ParsyResult - library result type
  */
 [[nodiscard]]
-enum ParsyResult ParsyUintList(const char * str, uint64_t * buf, size_t len);
+enum ParsyResult ParsyUIntList(const char * str, uint64_t * buf, size_t len);

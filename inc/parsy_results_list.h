@@ -8,8 +8,9 @@
 
 //            Result Enum                                      Error String
 PARSY_RESULT( GoodResult,                                      "Good result ☺" )
-PARSY_RESULT( InvalidString,                                   "Malformed string passed in. No null termination detected within PARSY_MAX_PARSABLE_STRING_LEN character limit." )
-PARSY_RESULT( TooManyInputArgs,                                "Too many input arguments." )
+PARSY_RESULT( InvalidString,                                   "Malformed string passed in. Either nullptr or no null termination detected within PARSY_MAX_PARSABLE_STRING_LEN character limit." )
+PARSY_RESULT( NullPtr,                                         "Null pointer was passed in for return-value parameter." )
+PARSY_RESULT( InvalidDefaultFormat,                            "Default format argument out-of-range." )
 PARSY_RESULT( HexAndDecFlagsSimultaneouslyUsed,                "Can't use both hex and dec format flags simultaneously." )
 PARSY_RESULT( ID_OOR,                                          "ID is out of range. Enter a number between 0 and 63d (0x3F)." )
 PARSY_RESULT( WhiteSpaceOnlyIDArg,                             "Only encountered whitespace in input." )

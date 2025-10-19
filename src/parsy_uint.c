@@ -26,30 +26,68 @@ static bool parsy_atoi(char digit, uint8_t * converted_digit);
 
 /* Public Function Implementations */
 
+/******************************************************************************/
 // Acceptable formats:
-// Hex:     0xZZ, Z, ZZ, ZZh, ZZH, ZZx, ZZX, xZZ, XZZ
-// Decimal: ZZd, ZZD
+// Hex:     0xZZ, ZZ, ZZh, ZZH, ZZx, ZZX, xZZ, XZZ
+// Decimal: ZZd, ZZD ZZ
+// Binary:  0bZZ ZZ
 [[nodiscard]]
-enum ParsyResult ParsyUint(
+enum ParsyResult ParsyUInt(
          const char * str,
          uint64_t * parsed_val,
+         size_t * accumulated_strlen,
          enum ParsyNumFormat default_fmt )
 {
    // Initial input validation
-   if ( str == NULL )
+   if ( str == nullptr )
       return Parsy_InvalidString;
-   else if ( parsed_val == NULL )
+   else if ( parsed_val == nullptr )
       return Parsy_NullPtr;
-   else if ( (int8_t)default_fmt < 0 || (int8_t)default_fmt > (int8_t)Parsy_NumOfFmts )
+   else if ( (int)default_fmt < 0 || (int)default_fmt > (int)Parsy_NumOfFmts )
       return Parsy_InvalidDefaultFormat;
 
    // TODO
+   // Parsing State Machine Time!
+   enum ParserState
+   {
+      Parser_Init,
+      Parser_NonDigitChars,
+      Parser_AmbiguousDigit,
+      Parser_HexPrefix,
+      Parser_BinPrefix,
+      Parser_HexNum,
+      Parser_BinNum,
+      Parser_DecSuffix,
+      Parser_HexSuffix,
+      Parser_UIntObtained
+   } parser_state = Parser_Init;
 
-   return Parsy_GoodResult;
+   size_t nchars_parsed = 1;
+   ptrdiff_t str_idx = 0;
+   uint64_t valbuf = 0;
+   enum ParsyResult result = Parsy_GoodResult;
+   do
+   {
+      // TODO
+
+      ++nchars_parsed;
+      ++str_idx;
+   }
+   while ( parser_state != Parser_UIntObtained
+           && nchars_parsed < PARSY_MAX_PARSABLE_STRING_LEN );
+
+   if ( parser_state == Parser_UIntObtained )
+      *parsed_val = valbuf;
+
+   if ( accumulated_strlen != nullptr )
+      *accumulated_strlen = nchars_parsed;
+
+   return result;
 }
 
+/******************************************************************************/
 [[nodiscard]]
-enum ParsyResult ParsyUintList(
+enum ParsyResult ParsyUIntList(
       const char * str,
       uint64_t * buf,
       size_t len )
@@ -548,8 +586,6 @@ static bool parsy_atoi(char digit, uint8_t * converted_digit)
 {
    assert( converted_digit != NULL );
 
-   bool ret_val = false;
-
    // Check input validity
    if (   ( digit >= '0' && digit <= '9' )
        || ( digit >= 'A' && digit <= 'F' )
@@ -564,8 +600,8 @@ static bool parsy_atoi(char digit, uint8_t * converted_digit)
       else
          *converted_digit = (uint8_t)(10 + (digit - 'a'));
 
-      ret_val = true;
+      return true;
    }
 
-   return ret_val;
+   return false;
 }
